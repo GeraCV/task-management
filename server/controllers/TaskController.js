@@ -1,86 +1,94 @@
-import { TaskModel } from "../models/taskModel.js";
-import { createTaskSchema, deleteTaskSchema, updateTaskSchema } from "../validations/taskSchema.js";
+import { TaskModel } from "../models/taskModel.js"
+import { createTaskSchema, deleteTaskSchema, updateTaskSchema } from "../validations/taskSchema.js"
+import messages from "../utils/messages.js"
 
 export class TaskController {
 
     static async getAllTasks (req, res) {
-        const tasks = await TaskModel.getAllTasks()
-        if(tasks.length) {
-            res.json({data: tasks})
-        } else {
-            res.status(404).json({data: tasks, message: 'No se encontraron resultados.'})
+        try {
+            const tasks = await TaskModel.getAllTasks()
+            if(!tasks.length) {
+                return res.status(404).json({data: tasks, message: messages.NOT_FOUND})
+            }
+            return res.json({data: tasks})
+        } catch (error) {
+            return res.status(500).json({ message: messages.SERVER_ERROR })
         }
     }
 
     static async getTaskById (req, res) {
-        const id = req.params.id
-        const task = await TaskModel.getTaskById({id})
-        if(task.length) {
-            res.json({data: task})
-        } else {
-            res.status(404).json({data: task, message: 'No se encontraron resultados.'})
+        try {
+            const id = req.params.id
+            const task = await TaskModel.getTaskById({id})
+            if(!task.length) {
+                return res.status(404).json({data: task, message: messages.NOT_FOUND})
+            }
+            return res.json({data: task})
+        } catch (error) {
+            return res.status(500).json({ message: messages.SERVER_ERROR })
         }
     }
-    static async createTask (req, res) {
-        const isValidData = await createTaskSchema(req.body)
-        if (!isValidData.success) {
-            const errors = isValidData.error.formErrors.fieldErrors
-            return res.status(422).json({ errors: errors, message: 'El formulario contiene errores.' })
-        }
 
-        const {name, description, userid} = req.body
+    static async createTask (req, res) {
         try {
-            const creationResult = await TaskModel.createTask({name, description, userid})
-            if(creationResult.affectedRows) {
-                res.json({mesage: "La información se insertó satisfactoriamente."})
-            } else {
-                res.status(500).json({mesage: "Hubo un error al insertar la información. Inténtalo mas tarde."})
+            const isValidData = await createTaskSchema(req.body)
+            if (!isValidData.success) {
+                const errors = isValidData.error.formErrors.fieldErrors
+                return res.status(422).json({ errors: errors, type: 'FORM_ERROR', message: messages.FORM_ERROR })
             }
+
+            const {name, description, userid} = isValidData.data
+
+            const creationResult = await TaskModel.createTask({name, description, userid})
+
+            if(!creationResult.affectedRows) {
+                return res.status(500).json({mesage: messages.INSERT_ERROR})
+            }
+
+            return res.json({mesage: messages.INSERT_SUCCESS})
+
         } catch (error) {
-            res.status(500).json({mesage: "Hubo un error al procesar la solicitud. Contacta al administrador."})
+            return res.status(500).json({mesage: messages.SERVER_ERROR})
         }
     }
 
     static async deleteTask (req, res) {
-        const id = req.params.id
-        const isValidData = await deleteTaskSchema({id})
-        if (!isValidData.success) {
-            const errors = isValidData.error.formErrors.fieldErrors
-            return res.status(422).json({ errors: errors, message: 'El formulario contiene errores.' })
-        }
-
         try {
-            const creationResult = await TaskModel.deleteTask({id})
-            if(creationResult.affectedRows) {
-                res.json({mesage: "La información se eliminó correctamente."})
-            } else {
-                res.status(500).json({mesage: "Hubo un error al eliminar la información. Inténtalo mas tarde."})
+            const id = req.params.id
+            const isValidData = await deleteTaskSchema({id})
+            if (!isValidData.success) {
+                const errors = isValidData.error.formErrors.fieldErrors
+                return res.status(400).json({ errors: errors,  type: 'PARAM_ERROR', message: messages.FORM_ERROR })
             }
+            const creationResult = await TaskModel.deleteTask({id})
+            if(!creationResult.affectedRows) {
+                return res.status(500).json({mesage: messages.DELETE_ERROR})
+            }
+            return res.json({mesage: messages.DELETE_SUCCESS})
         } catch (error) {
-            res.status(500).json({mesage: "Hubo un error al procesar la solicitud. Contacta al administrador."})
+            return res.status(500).json({mesage: messages.SERVER_ERROR})
         }
     }
 
     static async updateTask (req, res) {
-        const body = req.body
-        body['id'] = req.params.id
-
-        const isValidData = await updateTaskSchema(req.body)
-        if (!isValidData.success) {
-            const errors = isValidData.error.formErrors.fieldErrors
-            return res.status(422).json({ errors: errors, message: 'El formulario contiene errores.' })
-        }
-
-        const {name, description, id} = body
         try {
-            const creationResult = await TaskModel.updateTask({id, name, description})
-            if(creationResult.affectedRows) {
-                res.json({mesage: "La información se actualizó satisfactoriamente."})
-            } else {
-                res.status(500).json({mesage: "Hubo un error al actualizar la información. Inténtalo mas tarde."})
+            const body = req.body
+            body['id'] = req.params.id
+
+            const isValidData = await updateTaskSchema(body)
+            if (!isValidData.success) {
+                const errors = isValidData.error.formErrors.fieldErrors
+                return res.status(422).json({ errors: errors,  type: 'FORM_ERROR', message: messages.FORM_ERROR })
             }
+
+            const {name, description, id} = isValidData.data
+            const creationResult = await TaskModel.updateTask({id, name, description})
+            if(!creationResult.affectedRows) {
+                return res.status(500).json({mesage: messages.UPDATE_ERROR})
+            }
+            return res.json({mesage: messages.UPDATE_SUCCESS})
         } catch (error) {
-            res.status(500).json({mesage: "Hubo un error al procesar la solicitud. Contacta al administrador."})
+            return res.status(500).json({mesage: messages.SERVER_ERROR})
         }
     }
 }

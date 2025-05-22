@@ -1,13 +1,19 @@
-import { z } from 'zod'
+import { z } from "zod"
 import Database from "../config/db.js"
 
 const createSchema = z.object({
-    name: z.string()
+    name: z.string({required_error: 'El campo es obligatorio.'})
+        .trim()
         .min(5, { message: "Asegúrate de ingresar al menos 5 caracteres" })
         .max(50, {message: "Asegúrate de no superar 50 caracteres"})
         .refine(async (name) => {
             const result = await Database.query(`
-                SELECT name FROM taskmanagement.users WHERE name = ?;
+                SELECT
+                    name
+                FROM
+                    taskmanagement.users
+                WHERE
+                    name = ?;
                 `, [name])
 
             return result.length == 0
@@ -17,14 +23,20 @@ const createSchema = z.object({
 })
 
 const deleteSchema = z.object({
-    id: z.string().refine(async (id) => {
-        const result = await Database.query('SELECT id FROM taskmanagement.users WHERE id = ?;', [id])
+    id: z.string({required_error: 'El campo es obligatorio.'}).refine(async (id) => {
+        const result = await Database.query(`
+            SELECT
+                id
+            FROM
+                taskmanagement.users
+            WHERE
+                id = ?
+            `, [id])
         return result.length > 0
         }, {
         message: 'Asegúrate de ingresar un ID de usuario válido',
         })
 })
-
 
 const updateSchema = createSchema.merge(deleteSchema)
 

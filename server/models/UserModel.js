@@ -1,4 +1,4 @@
-import Database from "../config/db.js";
+import Database from "../config/db.js"
 
 export class UserModel {
 
@@ -8,7 +8,7 @@ export class UserModel {
                 SELECT
                     id, name
                 FROM
-                    taskmanagement.users;
+                    users;
             `
         )
     }
@@ -19,7 +19,9 @@ export class UserModel {
                 SELECT
                     id, name
                 FROM
-                    taskmanagement.users where id=?;
+                    users
+                WHERE
+                    id=?;
             `
         , [id])
     }
@@ -28,7 +30,7 @@ export class UserModel {
         return await Database.query(
             `
                 INSERT INTO
-                    taskmanagement.users (name)
+                    users (name)
                 VALUES (?);
             `
         , [name])
@@ -38,8 +40,9 @@ export class UserModel {
         return await Database.query(
             `
                 DELETE FROM
-                    taskmanagement.users
-                WHERE id = ?;
+                    users
+                WHERE
+                    id = ?;
             `
         , [id])
     }
@@ -48,10 +51,11 @@ export class UserModel {
         return await Database.query(
             `
                 UPDATE
-                    taskmanagement.users
+                    users
                 SET
                     name = ?
-                WHERE id = ?;
+                WHERE
+                    id = ?;
             `
         , [name, id])
     }
