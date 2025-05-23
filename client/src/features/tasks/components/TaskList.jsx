@@ -8,10 +8,10 @@ const TaskList = () => {
     const { tasks, getAllTasks } = taskStore()
 
     useEffect( () => {
-        const getUsers = async () => {
+        const getTasks = async () => {
             await getAllTasks()
         }
-        getUsers()
+        getTasks()
     },[getAllTasks])
 
     return (
