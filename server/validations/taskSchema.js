@@ -23,7 +23,8 @@ const createSchema = z.object({
         return result.length > 0
     }, {
         message: 'Asegúrate de ingresar un ID de usuario válido',
-    })
+    }),
+    status: z.enum(['0', '1'], {message: 'Asegúrate de elegir un estado válido'})
 })
 
 

@@ -37,9 +37,9 @@ export class TaskController {
                 return res.status(422).json({ errors: errors, type: 'FORM_ERROR', message: messages.FORM_ERROR })
             }
 
-            const {name, description, userid} = isValidData.data
+            const {name, description, userid, status} = isValidData.data
 
-            const creationResult = await TaskModel.createTask({name, description, userid})
+            const creationResult = await TaskModel.createTask({name, description, userid, status})
 
             if(!creationResult.affectedRows) {
                 return res.status(500).json({mesage: messages.INSERT_ERROR})
@@ -81,8 +81,8 @@ export class TaskController {
                 return res.status(422).json({ errors: errors,  type: 'FORM_ERROR', message: messages.FORM_ERROR })
             }
 
-            const {name, description, id} = isValidData.data
-            const creationResult = await TaskModel.updateTask({id, name, description})
+            const {name, description, id, status} = isValidData.data
+            const creationResult = await TaskModel.updateTask({id, name, description, status})
             if(!creationResult.affectedRows) {
                 return res.status(500).json({mesage: messages.UPDATE_ERROR})
             }

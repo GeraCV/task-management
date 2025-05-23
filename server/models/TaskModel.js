@@ -6,7 +6,7 @@ export class TaskModel {
         return await Database.query(
             `
                 SELECT
-                    id, name, description
+                    id, name, description, status
                 FROM
                     tasks;
             `
@@ -17,21 +17,21 @@ export class TaskModel {
         return await Database.query(
             `
                 SELECT
-                    id, name, description
+                    id, name, description, status
                 FROM
                     tasks where id=?;
             `
         , [id])
     }
 
-    static async createTask ({name, description, userid}) {
+    static async createTask ({name, description, userid, status}) {
         return await Database.query(
             `
                 INSERT INTO
-                    tasks (name, description, user_id)
-                VALUES (?,?,?);
+                    tasks (name, description, user_id, status)
+                VALUES (?,?,?,?);
             `
-        , [name, description, userid])
+        , [name, description, userid, status])
     }
 
     static async deleteTask ({id}) {
@@ -44,16 +44,17 @@ export class TaskModel {
         , [id])
     }
 
-    static async updateTask ({id, name, description}) {
+    static async updateTask ({id, name, description, status}) {
         return await Database.query(
             `
                 UPDATE
                     tasks
                 SET
                     name = ?,
-                    description = ?
+                    description = ?,
+                    status = ?
                 WHERE id = ?;
             `
-        , [name, description, id])
+        , [name, description, status, id])
     }
 }
