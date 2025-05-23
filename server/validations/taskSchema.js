@@ -10,7 +10,13 @@ const createSchema = z.object({
         .trim()
         .min(1, { message: "Asegúrate de ingresar al menos un caracter" })
         .max(2000, {message: "Asegúrate de no superar 2000 caracteres" }),
-    userid: z.string({required_error: 'El campo es obligatorio.'})
+    userid: z.preprocess(
+            (val) => {
+                if (typeof val === 'number') return val.toString()
+                return val
+            },
+            z.string({required_error: 'El campo es obligatorio.'})
+        )
         .refine(async (id) => {
         const result = await Database.query(`
                 SELECT
@@ -24,7 +30,12 @@ const createSchema = z.object({
     }, {
         message: 'Asegúrate de ingresar un ID de usuario válido',
     }),
-    status: z.enum(['0', '1'], {message: 'Asegúrate de elegir un estado válido'})
+    status: z.union([
+        z.literal('0'),
+        z.literal('1'),
+        z.literal(0),
+        z.literal(1)
+    ], {message: 'Asegúrate de elegir un estado válido'})
 })
 
 

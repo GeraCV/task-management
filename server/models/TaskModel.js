@@ -6,9 +6,17 @@ export class TaskModel {
         return await Database.query(
             `
                 SELECT
-                    id, name, description, status
+                    tasks.id,
+                    tasks.name,
+                    tasks.description,
+                    tasks.status,
+                    users.name as username,
+                    users.id as userid
                 FROM
-                    tasks;
+                    tasks
+                LEFT JOIN
+                    users
+                ON tasks.user_id = users.id;
             `
         )
     }
@@ -17,9 +25,19 @@ export class TaskModel {
         return await Database.query(
             `
                 SELECT
-                    id, name, description, status
+                    tasks.id,
+                    tasks.name,
+                    tasks.description,
+                    tasks.status,
+                    users.name as username,
+                    users.id as userid
                 FROM
-                    tasks where id=?;
+                    tasks
+                LEFT JOIN
+                    users
+                ON tasks.user_id = users.id
+                WHERE
+                    tasks.id = ?;
             `
         , [id])
     }
