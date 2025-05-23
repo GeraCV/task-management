@@ -69,7 +69,7 @@ const UserModal = () => {
                     Cancelar
                 </Button>
                 <Button variant="primary" type='submit'>
-                    Agregar
+                    Aceptar
                 </Button>
             </Modal.Footer>
         </Form>

@@ -3,11 +3,13 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import uiStore from "../store/ui.store"
 import userStore from "../../features/users/store/user.store"
+import taskStore from '../../features/tasks/store/tasks.store';
 
 const DeleteModal = () => {
 
     const  {isOpenDeleteModal, typeDeleteModal, closeDeleteModal, deleteModalData} = uiStore()
     const {deleteUser} = userStore()
+    const {deleteTask} = taskStore()
 
     const submitForm = (e) => {
         e.preventDefault()
@@ -15,7 +17,7 @@ const DeleteModal = () => {
 
         typeDeleteModal == 'USER'
             ? deleteUser(id)
-            : ''
+            : deleteTask(id)
 
             handleClose()
     }

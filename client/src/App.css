@@ -13,7 +13,13 @@
     align-items: center;
 }
 
-.main-content {
+.main-content-tasks {
+    max-width: 1000px;
+    width: 1000px;
+    min-width: 360px;
+}
+
+.main-content-users {
     max-width: 800px;
     width: 800px;
     min-width: 360px;
